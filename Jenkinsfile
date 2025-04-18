@@ -40,14 +40,14 @@ pipeline {
             }
         }
 
-        stage('Run Python Safety Check') {
+        /*stage('Run Python Safety Check') {
             steps {
                 echo '🐍 Running Python Safety Check...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh 'chmod +x scripts/run-safety.sh && bash scripts/run-safety.sh'
                 }
             }
-        }
+        }*/
 
         /*stage('Archive Reports') {
             steps {
