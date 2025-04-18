@@ -2,12 +2,15 @@
 
 # Set variables
 PROJECT_NAME="Security Scanner"
-SCAN_PATH="$WORKSPACE"  # Absolute path to your project
-OUTPUT_DIR="$WORKSPACE/output"  # Output directory for the report
-DATA_DIR="$WORKSPACE/dc-data"  # Persistent DB cache directory
+SCAN_PATH="/var/lib/jenkins/workspace/scan"  # Absolute path to your project
+OUTPUT_DIR="$SCAN_PATH/output"  # Output directory for the report
+DATA_DIR="$SCAN_PATH/dc-data"  # Persistent DB cache directory
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 OUTPUT_FILE="$OUTPUT_DIR/dependency-check-report-$TIMESTAMP.json"
 FIXED_NAME_FILE="$OUTPUT_DIR/dependency-check-report.json"  # File name without timestamp
+
+# Dependency-Check CLI location
+DEPENDENCY_CHECK_CMD="/opt/dependency-check-12.1.0/dependency-check/bin/dependency-check.sh"
 
 # Ensure output and data directories exist
 mkdir -p "$OUTPUT_DIR"
@@ -15,8 +18,8 @@ mkdir -p "$DATA_DIR"
 
 # Run Dependency-Check
 echo "🛡️ Running OWASP Dependency-Check..."
-dependency-check --version 
-dependency-check \
+$DEPENDENCY_CHECK_CMD --version 
+$DEPENDENCY_CHECK_CMD \
   --project "$PROJECT_NAME" \
   --scan "$SCAN_PATH" \
   --format JSON \
