@@ -34,6 +34,15 @@ $DEPENDENCY_CHECK_CMD --data "$DATA_DIR" --purge || {
     exit 1
 }
 
+# Check if NVD API key is set
+if [ -z "$NVD_API_KEY" ]; then
+    echo "⚠️  NVD_API_KEY environment variable is not set. Continuing without it (may be slow)."
+    API_KEY_OPTION=""
+else
+    echo "🔑 Using provided NVD API key"
+    API_KEY_OPTION="--nvdApiKey $NVD_API_KEY"
+fi
+
 # Run Dependency-Check
 echo "🛡️ Running OWASP Dependency-Check..."
 $DEPENDENCY_CHECK_CMD --version || {
@@ -46,7 +55,8 @@ $DEPENDENCY_CHECK_CMD \
   --scan "$SCAN_PATH" \
   --format JSON \
   --out "$OUTPUT_DIR" \
-  --data "$DATA_DIR" || {
+  --data "$DATA_DIR" \
+  $API_KEY_OPTION || {
     echo "❌ OWASP Dependency-Check encountered an error."
     exit 1
 }
