@@ -15,6 +15,7 @@ mkdir -p "$DATA_DIR"
 
 # Run Dependency-Check
 echo "🛡️ Running OWASP Dependency-Check..."
+dependency-check --version 
 dependency-check \
   --project "$PROJECT_NAME" \
   --scan "$SCAN_PATH" \
