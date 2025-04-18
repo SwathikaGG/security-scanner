@@ -9,7 +9,8 @@ pipeline {
     tools {
         maven 'Maven 3.8.7' // Name of the Maven tool configured in Jenkins
         jdk 'JDK-21' // Name of the JDK tool configured in Jenkins
-        dependencyCheck 'Dependency-Check-8.4.0' // Name of the Dependency-Check tool configured in Jenkins
+        org.jenkinsci.plugins.DependencyCheck.tools.DependencyCheckInstallation 'Dependency-Check-8.4.0'
+
     }
     
     stages {
