@@ -2,8 +2,8 @@
 
 # Set variables
 PROJECT_NAME="Security Scanner"
-SCAN_PATH="/home/user/security-scanner"  # Absolute path to your project
-OUTPUT_DIR="/home/user/security-scanner/output"  # Absolute path for the output directory
+SCAN_PATH="$WORKSPACE"  # Absolute path to your project
+OUTPUT_DIR="$WORKSPACE/output"  # Absolute path for the output directory
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 OUTPUT_FILE="$OUTPUT_DIR/dependency-check-report-$TIMESTAMP.json"
 
