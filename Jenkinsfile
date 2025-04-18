@@ -12,7 +12,6 @@ pipeline {
     tools {
         maven 'Maven 3.8.7' // Name of the Maven tool configured in Jenkins
         jdk 'JDK-21'         // Name of the JDK tool configured in Jenkins
-        // Removed dependencyCheck tool, since we are using a fixed path instead
     }
 
     stages {
@@ -48,7 +47,7 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh '''
                         chmod +x scripts/run-owasp.sh
-                        bash scripts/run-owasp.sh /opt/dependency-check-12.1.0/dependency-check/bin/dependency-check.sh
+                        bash scripts/run-owasp.sh ${DEP_CHECK_PATH} ${NVD_API_KEY}
                     '''
                 }
             }
