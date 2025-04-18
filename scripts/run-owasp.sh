@@ -24,7 +24,7 @@ dependency-check \
 
 # Debugging: List files in the output directory
 echo "Listing output directory files..."
-ls -l "$OUTPUT_DIR"  # Lists all files in the output directory to see if report exists
+ls -l "$OUTPUT_DIR"  # List all files in the output directory
 
 # Rename the generated JSON report
 if [ -f "$FIXED_NAME_FILE" ]; then
