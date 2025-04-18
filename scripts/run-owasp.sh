@@ -13,24 +13,36 @@ FIXED_NAME_FILE="$OUTPUT_DIR/dependency-check-report.json"  # File name without 
 DEPENDENCY_CHECK_CMD="/opt/dependency-check-12.1.0/dependency-check/bin/dependency-check.sh"
 
 # Ensure output and data directories exist
-mkdir -p "$OUTPUT_DIR"
-mkdir -p "$DATA_DIR"
+if [ ! -d "$OUTPUT_DIR" ]; then
+    echo "Creating output directory: $OUTPUT_DIR"
+    mkdir -p "$OUTPUT_DIR"
+else
+    echo "Output directory already exists: $OUTPUT_DIR"
+fi
+
+if [ ! -d "$DATA_DIR" ]; then
+    echo "Creating data directory: $DATA_DIR"
+    mkdir -p "$DATA_DIR"
+else
+    echo "Data directory already exists: $DATA_DIR"
+fi
 
 # Run Dependency-Check
 echo "🛡️ Running OWASP Dependency-Check..."
-$DEPENDENCY_CHECK_CMD --version 
+$DEPENDENCY_CHECK_CMD --version || { echo "❌ Dependency-Check failed to run."; exit 1; }
+
 $DEPENDENCY_CHECK_CMD \
   --project "$PROJECT_NAME" \
   --scan "$SCAN_PATH" \
   --format JSON \
   --out "$OUTPUT_DIR" \
-  --data "$DATA_DIR"
+  --data "$DATA_DIR" || { echo "❌ OWASP Dependency-Check encountered an error."; exit 1; }
 
 # Debugging: List files in the output directory
 echo "Listing output directory files..."
 ls -l "$OUTPUT_DIR"  # List all files in the output directory
 
-# Rename the generated JSON report
+# Check if the generated JSON report exists and rename it
 if [ -f "$FIXED_NAME_FILE" ]; then
     mv "$FIXED_NAME_FILE" "$OUTPUT_FILE"  # Rename to include timestamp
     ln -sf "$OUTPUT_FILE" "$FIXED_NAME_FILE"  # ✅ Create/Update symlink to latest report
