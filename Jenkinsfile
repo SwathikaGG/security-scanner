@@ -67,10 +67,20 @@ pipeline {
         stage('Sync with MySQL') {
             steps {
                 script {
-                    sh 'mysql -u springuser -p password -h localhost -e "INSERT INTO scan_reports (report) VALUES (\"$(cat ~/security-scanner/output/dependency-check-report.json)\");" security_scanner'
-                }
-            }
+                    def dbUser = "springboot_user" // match spring.datasource.username
+                    def dbPass = "your_secure_password" // match spring.datasource.password
+                    def dbName = "security_scanner"
+                    def json = sh(script: "cat ~/security-scanner/output/dependency-check-report.json", returnStdout: true).trim()
+                    json = json.replaceAll('"', '\\"') // escape double quotes
+
+                    sh """
+                        mysql -u ${dbUser} -p${dbPass} -h localhost -D ${dbName} -e \\
+                        "INSERT INTO scan_reports (report) VALUES (\\\"${json}\\\");"
+                    """
         }
+    }
+}
+
     }
 
     post {
