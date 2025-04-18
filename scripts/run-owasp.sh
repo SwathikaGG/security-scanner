@@ -3,11 +3,11 @@
 # Set variables
 PROJECT_NAME="Security Scanner"
 SCAN_PATH=~/security-scanner
-OUTPUT_DIR=~/output
+OUTPUT_DIR=~/security-scanner/output   # Updated to be within your project folder
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 OUTPUT_FILE="$OUTPUT_DIR/dependency-check-report-$TIMESTAMP.json"
 
-# Ensure output directory exists
+# Ensure output directory exists (within the project)
 mkdir -p "$OUTPUT_DIR"
 
 # Run Dependency-Check
