@@ -22,9 +22,11 @@ dependency-check \
   --data "$DATA_DIR"
 
 # Rename the generated JSON report
-if [ -f "$OUTPUT_DIR/dependency-check-report.json" ]; then
-    mv "$OUTPUT_DIR/dependency-check-report.json" "$OUTPUT_FILE"
+if [ -f "$FIXED_NAME_FILE" ]; then
+    mv "$FIXED_NAME_FILE" "$OUTPUT_FILE"
+    ln -sf "$OUTPUT_FILE" "$FIXED_NAME_FILE"  # Create or update the symlink
     echo "✅ Report saved as: $OUTPUT_FILE"
+    echo "🔗 Symlinked as: $FIXED_NAME_FILE"
 else
     echo "❌ Error: JSON report not found in $OUTPUT_DIR"
     exit 1
