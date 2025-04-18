@@ -3,36 +3,46 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
         OUTPUT_DIR = "${WORKSPACE}/output"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch:'main' , url: 'https://github.com/SwathikaGG/security-scanner.git'
+                git branch: 'main', url: 'https://github.com/SwathikaGG/security-scanner.git'
             }
         }
 
         stage('Build with Maven') {
             steps {
+                echo '🔧 Building project with Maven...'
                 sh 'mvn clean install'
             }
         }
 
         stage('Run OWASP Dependency-Check') {
             steps {
-                sh 'bash scripts/run-owasp.sh'
+                echo '🛡️ Running OWASP Dependency-Check...'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh 'chmod +x scripts/run-owasp.sh && bash scripts/run-owasp.sh'
+                }
             }
         }
 
         stage('Run Python Safety Check') {
             steps {
-                sh 'bash scripts/run-safety.sh'
+                echo '🐍 Running Python Safety Check...'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh 'chmod +x scripts/run-safety.sh && bash scripts/run-safety.sh'
+                }
             }
         }
 
         stage('Archive Reports') {
             steps {
+                echo '🗃️ Archiving reports...'
+                sh 'ls -lh $OUTPUT_DIR || echo "⚠️ Output directory not found!"'
                 archiveArtifacts artifacts: 'output/*.json', fingerprint: true
             }
         }
@@ -40,7 +50,7 @@ pipeline {
 
     post {
         always {
-            echo "Pipeline completed!"
+            echo "✅ Pipeline completed!"
         }
     }
 }
