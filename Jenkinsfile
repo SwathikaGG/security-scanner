@@ -6,7 +6,7 @@ pipeline {
         PATH = "${MAVEN_HOME}/bin:${env.PATH}"
         OUTPUT_DIR = "${WORKSPACE}/output"
         DEP_CHECK_PATH = "/opt/dependency-check-12.1.0/dependency-check/bin/dependency-check.sh"
-        NVD_API_KEY = credentials('5b885bc0-6dd8-4aa8-b517-db79ba7dfd92')
+        NVD_API_KEY = credentials('NVD_API_KEY')
     }
 
     tools {
