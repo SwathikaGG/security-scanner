@@ -49,15 +49,21 @@ pipeline {
             }
         }
 
-        stage('Archive Reports') {
+        /*stage('Archive Reports') {
             steps {
                 echo '🗃️ Archiving reports...'
                 sh 'ls -lh $OUTPUT_DIR || echo "⚠️ Output directory not found!"'
                 archiveArtifacts artifacts: 'output/*.json', fingerprint: true
             }
         }
-    }
-
+    }*/
+        stage('Sync with MySQL') {
+            steps {
+                script {
+                    sh 'mysql -u root -p admin -h localhost -e "INSERT INTO scan_reports (report) VALUES (\"$(cat ~/security-scanner/output/dependency-check-report.json)\");" security_scanner'
+                }
+            }
+        }
     post {
         always {
             echo "✅ Pipeline completed!"
