@@ -9,7 +9,7 @@ pipeline {
     tools {
         maven 'Maven 3.8.7' // Name of the Maven tool configured in Jenkins
         jdk 'JDK-21' // Name of the JDK tool configured in Jenkins
-        
+        dependencyCheck 'Dependency-Check'
 
     }
     
