@@ -7,10 +7,20 @@ pipeline {
         OUTPUT_DIR = "${WORKSPACE}/output"
     }
 
+    
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/SwathikaGG/security-scanner.git'
+            }
+        }
+
+        stage('Setup Output Directory') {
+            steps {
+                script {
+                    // Create output directory if it doesn't exist
+                    sh 'mkdir -p output'
+                }
             }
         }
 
