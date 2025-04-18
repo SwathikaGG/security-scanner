@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Set variables
+# Accept arguments
+DEPENDENCY_CHECK_CMD=$1
+NVD_API_KEY=$2
 PROJECT_NAME="Security Scanner"
 SCAN_PATH="/var/lib/jenkins/workspace/scan"  # Absolute path to your project
 OUTPUT_DIR="$SCAN_PATH/output"               # Output directory for the report
@@ -8,9 +10,6 @@ DATA_DIR="$SCAN_PATH/dc-data"                # Persistent DB cache directory
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 OUTPUT_FILE="$OUTPUT_DIR/dependency-check-report-$TIMESTAMP.json"
 FIXED_NAME_FILE="$OUTPUT_DIR/dependency-check-report.json"  # File name without timestamp
-
-# Dependency-Check CLI location
-DEPENDENCY_CHECK_CMD="/opt/dependency-check-12.1.0/dependency-check/bin/dependency-check.sh"
 
 # Ensure output and data directories exist
 if [ ! -d "$OUTPUT_DIR" ]; then
@@ -34,29 +33,15 @@ $DEPENDENCY_CHECK_CMD --data "$DATA_DIR" --purge || {
     exit 1
 }
 
-# Check if NVD API key is set
-if [ -z "$NVD_API_KEY" ]; then
-    echo "⚠️  NVD_API_KEY environment variable is not set. Continuing without it (may be slow)."
-    API_KEY_OPTION=""
-else
-    echo "🔑 Using provided NVD API key"
-    API_KEY_OPTION="--nvdApiKey $NVD_API_KEY"
-fi
-
-# Run Dependency-Check
+# Run Dependency-Check with NVD API Key
 echo "🛡️ Running OWASP Dependency-Check..."
-$DEPENDENCY_CHECK_CMD --version || {
-    echo "❌ Dependency-Check failed to run."
-    exit 1
-}
-
 $DEPENDENCY_CHECK_CMD \
   --project "$PROJECT_NAME" \
   --scan "$SCAN_PATH" \
   --format JSON \
   --out "$OUTPUT_DIR" \
   --data "$DATA_DIR" \
-  $API_KEY_OPTION || {
+  --nvdApiKey "$NVD_API_KEY" || {
     echo "❌ OWASP Dependency-Check encountered an error."
     exit 1
 }
