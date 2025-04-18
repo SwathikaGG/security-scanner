@@ -5,14 +5,15 @@ pipeline {
         MAVEN_HOME = '/usr/share/maven'
         PATH = "${MAVEN_HOME}/bin:${env.PATH}"
         OUTPUT_DIR = "${WORKSPACE}/output"
+        DEP_CHECK_PATH = "/opt/dependency-check-12.1.0/dependency-check/bin/dependency-check.sh"
     }
+
     tools {
         maven 'Maven 3.8.7' // Name of the Maven tool configured in Jenkins
-        jdk 'JDK-21' // Name of the JDK tool configured in Jenkins
-        dependencyCheck 'Dependency-Check'
-
+        jdk 'JDK-21'         // Name of the JDK tool configured in Jenkins
+        // Removed dependencyCheck tool, since we are using a fixed path instead
     }
-    
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -23,17 +24,15 @@ pipeline {
         stage('Setup Output Directory') {
             steps {
                 script {
-            // Check if the output directory exists, and create it only if it doesn't
                     def outputDir = 'output'
                     if (!fileExists(outputDir)) {
                         sh "mkdir -p ${outputDir}"
                     } else {
                         echo "Output directory already exists."
+                    }
+                }
             }
         }
-    }
-}
-
 
         stage('Build with Maven') {
             steps {
@@ -46,7 +45,10 @@ pipeline {
             steps {
                 echo '🛡️ Running OWASP Dependency-Check...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh 'chmod +x scripts/run-owasp.sh && bash scripts/run-owasp.sh'
+                    sh '''
+                        chmod +x scripts/run-owasp.sh
+                        bash scripts/run-owasp.sh /opt/dependency-check-12.1.0/dependency-check/bin/dependency-check.sh
+                    '''
                 }
             }
         }
@@ -73,8 +75,8 @@ pipeline {
         stage('Sync with MySQL') {
             steps {
                 script {
-                    def dbUser = "springboot_user" // match spring.datasource.username
-                    def dbPass = "your_secure_password" // match spring.datasource.password
+                    def dbUser = "springbootuser" // match spring.datasource.username
+                    def dbPass = "password" // match spring.datasource.password
                     def dbName = "security_scanner"
                     def json = sh(script: "cat ~/security-scanner/output/dependency-check-report.json", returnStdout: true).trim()
                     json = json.replaceAll('"', '\\"') // escape double quotes
@@ -83,10 +85,9 @@ pipeline {
                         mysql -u ${dbUser} -p${dbPass} -h localhost -D ${dbName} -e \\
                         "INSERT INTO scan_reports (report) VALUES (\\\"${json}\\\");"
                     """
+                }
+            }
         }
-    }
-}
-
     }
 
     post {
