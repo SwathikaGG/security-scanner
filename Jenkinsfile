@@ -67,7 +67,7 @@ pipeline {
         stage('Sync with MySQL') {
             steps {
                 script {
-                    sh 'mysql -u root -p admin -h localhost -e "INSERT INTO scan_reports (report) VALUES (\"$(cat ~/security-scanner/output/dependency-check-report.json)\");" security_scanner'
+                    sh 'mysql -u springuser -p password -h localhost -e "INSERT INTO scan_reports (report) VALUES (\"$(cat ~/security-scanner/output/dependency-check-report.json)\");" security_scanner'
                 }
             }
         }
