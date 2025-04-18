@@ -17,11 +17,17 @@ pipeline {
         stage('Setup Output Directory') {
             steps {
                 script {
-                    // Create output directory if it doesn't exist
-                    sh 'mkdir -p output'
-                }
+            // Check if the output directory exists, and create it only if it doesn't
+                    def outputDir = 'output'
+                    if (!fileExists(outputDir)) {
+                        sh "mkdir -p ${outputDir}"
+                    } else {
+                        echo "Output directory already exists."
             }
         }
+    }
+}
+
 
         stage('Build with Maven') {
             steps {
